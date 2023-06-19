@@ -44,7 +44,11 @@ class _Index extends State<Index> {
         ),
       );
     } else {
-      return Container();
+      return SizedBox.expand(
+        child: Container(
+          child: Image.asset('assets/slashio.jpg', fit: BoxFit.cover),
+        ),
+      );
     }
   }
 
