@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:foodapp/services/Firebase.dart';
 import 'package:video_player/video_player.dart';
 
 class Index extends StatefulWidget {
   const Index({super.key});
 
+  @override
   _Index createState() => _Index();
 }
 
 class _Index extends State<Index> {
   late VideoPlayerController _videoController;
+  final Authentication _auth = Authentication();
 
   @override
   void initState() {
@@ -54,7 +57,7 @@ class _Index extends State<Index> {
 
   Widget authButton(isGoogle) {
     return ElevatedButton(
-        onPressed: () {},
+        onPressed: isGoogle ? _auth.signInWIthGoogle : _auth.signInWithFacebook,
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
                 Color(isGoogle ? 0xFF232323 : 0xFFFFFFFF)),
@@ -70,7 +73,7 @@ class _Index extends State<Index> {
               width: 22,
             ),
             Text(
-              "Sign In With ${isGoogle ? 'google' : 'facebook'}",
+              "Sign In With ${isGoogle ? 'Google' : 'facebook'}",
               style: TextStyle(
                   fontSize: 16,
                   color: Color(isGoogle ? 0xFFFFFFFF : 0xFF1877F2)),
