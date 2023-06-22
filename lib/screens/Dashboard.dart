@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
+  @override
   _Dashboard createState() => _Dashboard();
 }
 
@@ -29,76 +30,97 @@ class _Dashboard extends State<Dashboard> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
-            title: CircleAvatar(
-              radius: 20,
-              child: ClipOval(
-                child: Image.network(
-                  user?.profilePic,
+            title: FittedBox(
+              fit: BoxFit.cover,
+              child: Container(
                   height: 40,
                   width: 40,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
-              ),
+                  child: Image.asset("assets/favicon.ico")),
             ),
-            actions: [
-              Center(
-                child: Container(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.white,
-                        textStyle: const TextStyle(color: Colors.black)),
-                    child: const Icon(Icons.logout, color: Colors.black),
-                    onPressed: () => _auth.signOut(),
+            centerTitle: true,
+            leadingWidth: 60,
+            leading: Row(
+              children: [
+                const SizedBox(
+                  width: 8,
+                ),
+                SizedBox(
+                  child: CircleAvatar(
+                    radius: 20,
+                    child: ClipOval(
+                      child: Image.network(
+                        user?.profilePic,
+                        height: 40,
+                        width: 40,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              )
+              ],
+            ),
+            actions: [
+              Container(
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.menu_rounded,
+                        color: Colors.black,
+                        size: 40,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
-          body: isMenu ? Menu() : ShoppingCart(),
-          bottomNavigationBar: Container(
-            height: 80,
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
+          body: isMenu ? const Menu() : const ShoppingCart(),
+          bottomNavigationBar: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: IconButton(
                   onPressed: () {
                     setState(() {
                       isMenu = true;
                     });
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.home_outlined,
-                    color: isMenu ? Color(0xFFd79914) : Colors.black,
                     size: 30,
                   ),
                 ),
-                IconButton(
+                label: 'Home',
+                backgroundColor: const Color(0xFFd79914),
+              ),
+              BottomNavigationBarItem(
+                icon: IconButton(
                   onPressed: () {
                     setState(() {
                       isMenu = false;
                     });
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.shopping_bag_outlined,
-                    color: !isMenu ? Color(0xFFd79914) : Colors.black,
                     size: 30,
                   ),
                 ),
-              ],
-            ),
+                label: "Shopping Bag",
+                backgroundColor: const Color(0xFFd79914),
+              )
+            ],
           ),
         ));
   }

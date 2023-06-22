@@ -13,21 +13,9 @@ class Index extends StatefulWidget {
 
 class _IndexState extends State<Index> {
   @override
-  void initState() {
-    super.initState();
-    myFunction();
-  }
-
-  @override
-  void myFunction() {
-    print('page loading');
-  }
-
-  @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserData?>(context);
 
-    // ignore: unnecessary_null_comparison
     return user == null ? const AuthScreen() : const Dashboard();
   }
 }

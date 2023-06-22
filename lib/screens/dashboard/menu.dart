@@ -5,7 +5,7 @@ import 'package:foodapp/models/menu.dart';
 import 'package:provider/provider.dart';
 
 class Menu extends StatefulWidget {
-  Menu({Key? key}) : super(key: key);
+  const Menu({Key? key}) : super(key: key);
 
   @override
   _MenuState createState() => _MenuState();
@@ -16,21 +16,35 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     final foodMenu = Provider.of<List<FoodMenu>?>(context);
 
-    return Container(
-        child: Align(
-      alignment: AlignmentDirectional.topStart,
-      child: Column(children: [
-        _header(),
-        const Text('hi'),
-        Expanded(
-          child: ListView.builder(
-              itemCount: foodMenu?.length,
-              itemBuilder: (context, int i) {
-                return FoodTile(foodMenu?[i]);
-              }),
-        )
-      ]),
-    ));
+    return foodMenu != null
+        ? Container(
+            child: Align(
+            alignment: AlignmentDirectional.topStart,
+            child: Column(children: [
+              _header(),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: foodMenu.length,
+                    itemBuilder: (context, int i) {
+                      return FoodTile(foodMenu[i]);
+                    }),
+              )
+            ]),
+          ))
+        : Container(
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image(image: AssetImage('assets/pizza_sliced.gif')),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  Text('Loading...')
+                ],
+              ),
+            ),
+          );
   }
 
   Widget FoodTile(food) {
@@ -50,9 +64,9 @@ class _MenuState extends State<Menu> {
               alignment: Alignment.bottomLeft,
               child: ClipRect(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                  filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                   child: Container(
-                    height: 200,
+                    height: 350,
                     width: 350,
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -129,6 +143,32 @@ class _MenuState extends State<Menu> {
   }
 
   Widget _header() {
-    return const Text('header');
+    return Material(
+      elevation: 4,
+      child: Container(
+          height: 70,
+          width: 500,
+          color: Colors.white,
+          child: Center(
+              child: SizedBox(
+            width: 300,
+            child: TextField(
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 16.0),
+                  hintText: 'Search...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Color(0xFFd79914)),
+                  ),
+                  prefixIcon: const Icon(Icons.search),
+                  focusColor: Color(0xFFd79914)),
+            ),
+          ))),
+    );
   }
 }

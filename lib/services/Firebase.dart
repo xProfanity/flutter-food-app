@@ -42,7 +42,7 @@ class Authentication {
       final LoginResult result = await facebook.login();
       final token = result.accessToken?.token;
       final OAuthCredential facebookCredential =
-          await FacebookAuthProvider.credential(token!);
+          FacebookAuthProvider.credential(token!);
 
       await _auth.signInWithCredential(facebookCredential);
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ShoppingCart extends StatefulWidget {
   const ShoppingCart({super.key});
 
+  @override
   _ShoppingCart createState() => _ShoppingCart();
 }
 
@@ -11,7 +12,7 @@ class _ShoppingCart extends State<ShoppingCart> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        child: Text('ShoppingCart'),
+        child: const Text('ShoppingCart'),
       ),
     );
   }
