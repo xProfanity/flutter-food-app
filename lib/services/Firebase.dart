@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:foodapp/models/menu.dart';
 import 'package:foodapp/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -48,5 +50,26 @@ class Authentication {
     } catch (e) {
       print("fb sign in error === $e");
     }
+  }
+}
+
+class Firestore {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference menuCollection =
+      FirebaseFirestore.instance.collection('menu');
+
+  List<FoodMenu> _menuCollection(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return FoodMenu(
+          name: (doc.data() as Map)['name'],
+          price: (doc.data() as Map)['price'],
+          photoUrl: (doc.data() as Map)['photo'],
+          contents: (doc.data() as Map)['contents'],
+          docId: doc.id);
+    }).toList();
+  }
+
+  Stream<List<FoodMenu>>? get menu {
+    return menuCollection.snapshots().map(_menuCollection);
   }
 }
