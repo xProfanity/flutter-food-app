@@ -29,9 +29,23 @@ class _Dashboard extends State<Dashboard> {
 
   bool isMenu = true;
 
+  int count = 0;
+
+  void updateCartCount() {
+    count++;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = widget.data?[0];
+    final cart = user['cart'].length;
+    if (count == 0) {
+      setState(() {
+        count = cart;
+      });
+    }
+
     return StreamProvider<List<FoodMenu>?>.value(
         value: Firestore().menu,
         initialData: null,
@@ -129,9 +143,11 @@ class _Dashboard extends State<Dashboard> {
             ),
             body: Stack(
               children: [
-                isMenu ? const Menu() : const ShoppingCart(),
+                isMenu
+                    ? Menu(updateCartCount, user['docId'])
+                    : const ShoppingCart(),
               ],
             ),
-            bottomNavigationBar: BottomNavigation()));
+            bottomNavigationBar: BottomNavigation(count)));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:foodapp/screens/Dashboard.dart';
+import 'package:foodapp/store/ShoppingBag.dart';
 import 'package:foodapp/widgets/CrashReport.dart';
 import 'package:foodapp/widgets/Loader.dart';
 
@@ -24,12 +25,22 @@ class DashboardLoader extends StatelessWidget {
 
           if (snapshot.connectionState == ConnectionState.done) {
             final data = snapshot.data!.docs.map((item) {
-              return item.data();
+              Map<String, dynamic> data = item.data() as Map<String, dynamic>;
+              final docId = item.id;
+
+              return {...data, 'docId': docId};
             });
+
+            Stream<Map<String, dynamic>> userData() {
+              return Stream.fromIterable(data);
+            }
+
+            ShoppingBag(
+                data.toList()[0]['cart'], data.toList()[0]['cart'].length);
             return Dashboard(data.toList());
           }
 
-          return Loader('Loading 💨');
+          return const Loader('Loading 💨');
         });
   }
 }

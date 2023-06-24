@@ -2,11 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:foodapp/models/menu.dart';
+import 'package:foodapp/widgets/AddToCartButton.dart';
 import 'package:foodapp/widgets/Loader.dart';
 import 'package:provider/provider.dart';
 
 class Menu extends StatefulWidget {
-  const Menu({Key? key}) : super(key: key);
+  final docId;
+  final updateCartCount;
+
+  const Menu(this.updateCartCount, this.docId);
 
   @override
   _MenuState createState() => _MenuState();
@@ -36,6 +40,8 @@ class _MenuState extends State<Menu> {
   }
 
   Widget FoodTile(food) {
+    final docId = widget.docId;
+    final updateCartCount = widget.updateCartCount;
     return Container(
       height: 350,
       width: 350,
@@ -63,36 +69,7 @@ class _MenuState extends State<Menu> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 15.0),
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              width: 100,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: const Color(0xFFd79914),
-                              ),
-                              child: const Center(
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Add to Bag',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(
-                                    Icons.shopping_bag_outlined,
-                                    size: 15,
-                                    weight: 51.0,
-                                  )
-                                ],
-                              )),
-                            ),
-                          ),
+                          child: AddToCartButton(updateCartCount, food, docId),
                         ),
                         Text(
                           '\$${food?.price}',
