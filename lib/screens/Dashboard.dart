@@ -2,13 +2,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foodapp/models/menu.dart';
 import 'package:foodapp/models/user.dart';
+import 'package:foodapp/screens/ProfileScreen.dart';
 import 'package:foodapp/screens/dashboard/menu.dart';
 import 'package:foodapp/screens/dashboard/shoppingCart.dart';
 import 'package:foodapp/services/Firebase.dart';
+import 'package:foodapp/widgets/AppLogo.dart';
+import 'package:foodapp/widgets/BottomNavigation.dart';
+import 'package:foodapp/widgets/MenuButton.dart';
+import 'package:foodapp/widgets/MenuContainer.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final data;
+
+  Dashboard(this.data);
 
   @override
   _Dashboard createState() => _Dashboard();
@@ -16,112 +23,115 @@ class Dashboard extends StatefulWidget {
 
 class _Dashboard extends State<Dashboard> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final logo = const AppLogo();
+  final menuButton = MenuButton();
+  final menuContainer = MenuContainer();
 
   bool isMenu = true;
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData?>(context);
-
+    final user = widget.data?[0];
     return StreamProvider<List<FoodMenu>?>.value(
         value: Firestore().menu,
         initialData: null,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: FittedBox(
-              fit: BoxFit.cover,
-              child: Container(
-                  height: 40,
-                  width: 40,
-                  child: Image.asset("assets/favicon.ico")),
+            endDrawer: Drawer(
+              child: ListView(
+                children: [
+                  UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(color: Color(0xFF232323)),
+                    accountName: Text(user?['username']),
+                    accountEmail: Text(user?['email']),
+                    currentAccountPicture: CircleAvatar(
+                        radius: 40,
+                        child: ClipOval(
+                            child: Image.network(
+                          user?['profilePic'],
+                          height: 80,
+                          width: 80,
+                        ))),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  ListTile(
+                    title: Text('Logout'),
+                    onTap: () {
+                      _auth.signOut();
+                      UserData(null, null, null, null);
+                    },
+                    leading: Icon(Icons.logout),
+                  ),
+                ],
+              ),
             ),
-            centerTitle: true,
-            leadingWidth: 60,
-            leading: Row(
-              children: [
-                const SizedBox(
-                  width: 8,
-                ),
-                SizedBox(
-                  child: CircleAvatar(
-                    radius: 20,
-                    child: ClipOval(
-                      child: Image.network(
-                        user?.profilePic,
-                        height: 40,
-                        width: 40,
-                        loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent? loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: logo.build(context),
+              centerTitle: true,
+              leadingWidth: 60,
+              leading: Row(
+                children: [
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  SizedBox(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => Profile()));
+                      },
+                      child: CircleAvatar(
+                        radius: 20,
+                        child: ClipOval(
+                          child: Image.network(
+                            user?['profilePic'],
+                            height: 40,
+                            width: 40,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
+              ),
+              actions: [
+                Builder(builder: (BuildContext context) {
+                  return IconButton(
+                      padding: EdgeInsets.only(right: 8),
+                      onPressed: () {
+                        Scaffold.of(context).openEndDrawer();
+                      },
+                      icon: Icon(
+                        Icons.menu,
+                        size: 40,
+                        color: Colors.black,
+                      ));
+                })
               ],
             ),
-            actions: [
-              Container(
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.menu_rounded,
-                        color: Colors.black,
-                        size: 40,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          body: isMenu ? const Menu() : const ShoppingCart(),
-          bottomNavigationBar: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isMenu = true;
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.home_outlined,
-                    size: 30,
-                  ),
-                ),
-                label: 'Home',
-                backgroundColor: const Color(0xFFd79914),
-              ),
-              BottomNavigationBarItem(
-                icon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isMenu = false;
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 30,
-                  ),
-                ),
-                label: "Shopping Bag",
-                backgroundColor: const Color(0xFFd79914),
-              )
-            ],
-          ),
-        ));
+            body: Stack(
+              children: [
+                isMenu ? const Menu() : const ShoppingCart(),
+              ],
+            ),
+            bottomNavigationBar: BottomNavigation()));
   }
 }

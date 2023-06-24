@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodapp/models/user.dart';
 import 'package:foodapp/screens/AuthScreen.dart';
-import 'package:foodapp/screens/Dashboard.dart';
+import 'package:foodapp/screens/DashboardLoader.dart';
 import 'package:provider/provider.dart';
 
 class Index extends StatefulWidget {
@@ -16,6 +16,6 @@ class _IndexState extends State<Index> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserData?>(context);
 
-    return user == null ? const AuthScreen() : const Dashboard();
+    return user == null ? const AuthScreen() : DashboardLoader(user.uid);
   }
 }

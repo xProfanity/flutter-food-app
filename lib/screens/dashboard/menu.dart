@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:foodapp/models/menu.dart';
+import 'package:foodapp/widgets/Loader.dart';
 import 'package:provider/provider.dart';
 
 class Menu extends StatefulWidget {
@@ -31,20 +32,7 @@ class _MenuState extends State<Menu> {
               )
             ]),
           ))
-        : Container(
-            child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image(image: AssetImage('assets/pizza_sliced.gif')),
-                  SizedBox(
-                    height: 2,
-                  ),
-                  Text('Loading...')
-                ],
-              ),
-            ),
-          );
+        : const Loader("Getting food menu 🥳");
   }
 
   Widget FoodTile(food) {

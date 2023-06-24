@@ -67,6 +67,7 @@ flutter:
     - assets/slashio.jpg
     - assets/pizza_sliced.gif
     - assets/favicon.ico
+    - assets/pizza_spinning.gif
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

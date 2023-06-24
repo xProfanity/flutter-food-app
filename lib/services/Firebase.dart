@@ -7,15 +7,51 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class Authentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final CollectionReference _users =
+      FirebaseFirestore.instance.collection('users');
 
   UserData? _userFromFirebase(User? user) {
     return user != null
-        ? UserData(user.uid, user.displayName, user.photoURL)
+        ? UserData(user.uid, user.displayName, user.photoURL, user.email)
         : null;
   }
 
   Stream<UserData?> get user {
     return _auth.authStateChanges().map(_userFromFirebase);
+  }
+
+  Future<void> addGoogleUserCredentials(
+      isNewUser, uid, username, photoURL, email, token) async {
+    isNewUser
+        ? {
+            await _users.add({
+              'userId': uid,
+              'username': username,
+              'profilePic': photoURL,
+              'email': email,
+              'needToken': false,
+              'token': token,
+              'cart': [],
+            })
+          }
+        : null;
+  }
+
+  Future<void> addFacebookUserCredentials(
+      isNewUser, uid, username, photoURL, email, token) async {
+    isNewUser
+        ? {
+            await _users.add({
+              'userId': uid,
+              'username': username,
+              'profilePic': '$photoURL?height=500&access_token=$token',
+              'email': email,
+              'needToken': true,
+              'token': token,
+              'cart': [],
+            })
+          }
+        : null;
   }
 
   Future signInWIthGoogle() async {
@@ -30,7 +66,15 @@ class Authentication {
         idToken: googleAuth?.idToken,
       );
 
-      await _auth.signInWithCredential(credential);
+      final response = await _auth.signInWithCredential(credential);
+
+      await addGoogleUserCredentials(
+          response.additionalUserInfo?.isNewUser,
+          response.user?.uid,
+          response.user?.displayName,
+          response.user?.photoURL,
+          response.user?.email,
+          response.credential?.accessToken);
     } catch (e) {
       print("error signing in with google === $e");
     }
@@ -44,9 +88,15 @@ class Authentication {
       final OAuthCredential facebookCredential =
           FacebookAuthProvider.credential(token!);
 
-      await _auth.signInWithCredential(facebookCredential);
+      final response = await _auth.signInWithCredential(facebookCredential);
 
-      // final dynamic userCred = await _facebook.getUserData();
+      await addFacebookUserCredentials(
+          response.additionalUserInfo?.isNewUser,
+          response.user?.uid,
+          response.user?.displayName,
+          response.user?.photoURL,
+          response.user?.email,
+          token);
     } catch (e) {
       print("fb sign in error === $e");
     }
@@ -57,6 +107,8 @@ class Firestore {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference menuCollection =
       FirebaseFirestore.instance.collection('menu');
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users');
 
   List<FoodMenu> _menuCollection(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
