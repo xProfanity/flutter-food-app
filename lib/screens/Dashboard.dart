@@ -28,6 +28,17 @@ class _Dashboard extends State<Dashboard> {
 
   bool isMenu = true;
 
+  void switchDashboard(currentIndex) {
+    if (currentIndex == 1) {
+      setState(() {
+        isMenu = false;
+      });
+    } else
+      setState(() {
+        isMenu = true;
+      });
+  }
+
   int count = 0;
   var cart = [];
 
@@ -146,11 +157,14 @@ class _Dashboard extends State<Dashboard> {
         body: Stack(
           children: [
             isMenu
-                ? Menu(updateCartCount, user['docId'], user['cart'], count,
-                    foodMenu)
-                : const ShoppingCart(),
+                ? Visibility(
+                    visible: isMenu,
+                    child: Menu(updateCartCount, user['docId'], user['cart'],
+                        count, foodMenu),
+                  )
+                : Visibility(visible: !isMenu, child: ShoppingCart(cart)),
           ],
         ),
-        bottomNavigationBar: BottomNavigation(count));
+        bottomNavigationBar: BottomNavigation(count, switchDashboard));
   }
 }
