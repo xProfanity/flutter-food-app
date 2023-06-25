@@ -18,15 +18,24 @@ class DashboardLoader extends StatelessWidget {
     final CollectionReference _user =
         FirebaseFirestore.instance.collection('users');
 
-    return FutureBuilder<QuerySnapshot>(
-        future: _user.where('userId', isEqualTo: uid).get(),
+    return StreamBuilder<QuerySnapshot>(
+        stream: _user.where('userId', isEqualTo: uid).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          print('snapshot $snapshot');
           if (snapshot.hasError) {
             return CrashReport('👻 Something went wrong, lol');
           }
 
-          if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader('Loading 💨');
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {}
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Loader('No data available 💤');
+          }
+
+          if (snapshot.hasData) {
             final data = snapshot.data!.docs.map((item) {
               Map<String, dynamic> data = item.data() as Map<String, dynamic>;
               final docId = item.id;
@@ -46,7 +55,7 @@ class DashboardLoader extends StatelessWidget {
                 child: Dashboard(data.toList()));
           }
 
-          return const Loader('Loading 💨');
+          return Loader("Loading ☕");
         });
   }
 }

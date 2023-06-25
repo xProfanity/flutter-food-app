@@ -40,9 +40,10 @@ class _Dashboard extends State<Dashboard> {
       cart = user['cart'];
     });
     void updateCartCount(newCartCount) {
-      count = newCartCount;
-      cart = user['cart'];
-      setState(() {});
+      setState(() {
+        count = newCartCount;
+        cart = user['cart'];
+      });
     }
 
     if (count == 0) {
@@ -145,7 +146,8 @@ class _Dashboard extends State<Dashboard> {
         body: Stack(
           children: [
             isMenu
-                ? Menu(updateCartCount, user['docId'], cart, count, foodMenu)
+                ? Menu(updateCartCount, user['docId'], user['cart'], count,
+                    foodMenu)
                 : const ShoppingCart(),
           ],
         ),

@@ -35,6 +35,7 @@ class _AddToCartButtonState extends State<AddToCartButton> {
   }
 
   Future removeFromShoppingCart(food, docId) async {
+    print('data to delete $food');
     final foodData = [
       {
         'name': food['name'],
@@ -51,11 +52,12 @@ class _AddToCartButtonState extends State<AddToCartButton> {
 
   var cart = [];
   bool isInCart = false;
-  var itemInCart;
   @override
   Widget build(BuildContext context) {
     final cartData = widget.cart;
     final food = widget.food;
+    final itemInCart =
+        cartData.where((item) => item?['foodId'] == food?.docId).toList();
 
     if (cart.isEmpty) {
       print('cart eeti $cart');
@@ -66,22 +68,22 @@ class _AddToCartButtonState extends State<AddToCartButton> {
         if (foodItem?['foodId'] == food?.docId) {
           setState(() {
             isInCart = true;
-            itemInCart = foodItem;
           });
         }
       }
     }
+    print('foodItem here? $itemInCart');
 
     return Row(
       children: [
         GestureDetector(
           onTap: () async {
             if (!isInCart) {
-              await addToShoppingBag(widget.food, widget.docId);
               widget.updateCartCount(widget.count + 1);
               setState(() {
                 isInCart = true;
               });
+              await addToShoppingBag(widget.food, widget.docId);
             } else
               print('Already added in cart');
           },
@@ -119,11 +121,11 @@ class _AddToCartButtonState extends State<AddToCartButton> {
           visible: isInCart ? true : false,
           child: GestureDetector(
             onTap: () async {
-              await removeFromShoppingCart(itemInCart, widget.docId);
               widget.updateCartCount(widget.count - 1);
               setState(() {
                 isInCart = false;
               });
+              await removeFromShoppingCart(itemInCart[0], widget.docId);
             },
             child: Container(
               width: 40,
