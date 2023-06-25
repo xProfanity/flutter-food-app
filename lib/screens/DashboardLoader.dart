@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodapp/models/menu.dart';
 import 'package:foodapp/screens/Dashboard.dart';
+import 'package:foodapp/services/Firebase.dart';
 import 'package:foodapp/store/ShoppingBag.dart';
 import 'package:foodapp/widgets/CrashReport.dart';
 import 'package:foodapp/widgets/Loader.dart';
+import 'package:provider/provider.dart';
 
 class DashboardLoader extends StatelessWidget {
   final uid;
@@ -37,7 +40,10 @@ class DashboardLoader extends StatelessWidget {
 
             ShoppingBag(
                 data.toList()[0]['cart'], data.toList()[0]['cart'].length);
-            return Dashboard(data.toList());
+            return StreamProvider<List<FoodMenu>?>.value(
+                value: Firestore().menu,
+                initialData: null,
+                child: Dashboard(data.toList()));
           }
 
           return const Loader('Loading 💨');

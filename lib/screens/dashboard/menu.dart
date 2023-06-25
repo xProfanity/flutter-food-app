@@ -1,16 +1,18 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:foodapp/models/menu.dart';
 import 'package:foodapp/widgets/AddToCartButton.dart';
 import 'package:foodapp/widgets/Loader.dart';
-import 'package:provider/provider.dart';
 
 class Menu extends StatefulWidget {
   final docId;
   final updateCartCount;
+  final cart;
+  final foodMenu;
+  final count;
 
-  const Menu(this.updateCartCount, this.docId);
+  const Menu(
+      this.updateCartCount, this.docId, this.cart, this.count, this.foodMenu);
 
   @override
   _MenuState createState() => _MenuState();
@@ -19,8 +21,8 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
-    final foodMenu = Provider.of<List<FoodMenu>?>(context);
-
+    final foodMenu = widget.foodMenu;
+    final cart = widget.cart;
     return foodMenu != null
         ? Container(
             child: Align(
@@ -31,7 +33,7 @@ class _MenuState extends State<Menu> {
                 child: ListView.builder(
                     itemCount: foodMenu.length,
                     itemBuilder: (context, int i) {
-                      return FoodTile(foodMenu[i]);
+                      return FoodTile(foodMenu[i], cart);
                     }),
               )
             ]),
@@ -39,7 +41,7 @@ class _MenuState extends State<Menu> {
         : const Loader("Getting food menu 🥳");
   }
 
-  Widget FoodTile(food) {
+  Widget FoodTile(food, cart) {
     final docId = widget.docId;
     final updateCartCount = widget.updateCartCount;
     return Container(
@@ -68,9 +70,9 @@ class _MenuState extends State<Menu> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 15.0),
-                          child: AddToCartButton(updateCartCount, food, docId),
-                        ),
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: AddToCartButton(updateCartCount,
+                                widget.count, food, docId, cart)),
                         Text(
                           '\$${food?.price}',
                           style: const TextStyle(
