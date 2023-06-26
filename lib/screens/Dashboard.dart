@@ -39,18 +39,51 @@ class _Dashboard extends State<Dashboard> {
       });
   }
 
+  List? foodMenu = [];
+
   int count = 0;
   var cart = [];
   num totalPriceInCart = 0;
 
+  String searchTerm = '';
+
   @override
   Widget build(BuildContext context) {
-    final foodMenu = Provider.of<List<FoodMenu>?>(context);
+    final foodMenuData = Provider.of<List<FoodMenu>?>(context);
     final user = widget.data?[0];
     final cartCount = user['cart'].length;
-    setState(() {
-      cart = user['cart'];
-    });
+
+    if (searchTerm == '') {
+      setState(() {
+        if (foodMenuData != null) {
+          foodMenu = foodMenuData as List<dynamic>;
+        }
+      });
+    }
+
+    void updateSearchTerm(text) {
+      setState(() {
+        searchTerm = text;
+      });
+      if (searchTerm != '') {
+        var searchResults = [];
+        searchResults.addAll(foodMenuData as Iterable<dynamic>);
+        searchResults.retainWhere((element) {
+          return element.name?.toLowerCase().contains(searchTerm.toLowerCase());
+        });
+
+        print("searchResults manyi $searchResults");
+        setState(() {
+          foodMenu = searchResults;
+        });
+      }
+    }
+
+    if (searchTerm != '') {
+      setState(() {
+        cart = user['cart'];
+      });
+    }
     void updateCartCount(newCartCount) {
       setState(() {
         count = newCartCount;
@@ -59,6 +92,7 @@ class _Dashboard extends State<Dashboard> {
       });
     }
 
+    print("nthawi tu bwanji kodi eee? pa dashboard ${searchTerm}");
     setState(() {
       count = cartCount;
     });
@@ -167,7 +201,7 @@ class _Dashboard extends State<Dashboard> {
                 ? Visibility(
                     visible: isMenu,
                     child: Menu(updateCartCount, user['docId'], user['cart'],
-                        count, foodMenu),
+                        count, foodMenu, updateSearchTerm, searchTerm),
                   )
                 : Visibility(
                     visible: !isMenu,

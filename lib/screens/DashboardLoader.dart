@@ -22,7 +22,7 @@ class DashboardLoader extends StatelessWidget {
         stream: _user.where('userId', isEqualTo: uid).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return CrashReport('👻 Something went wrong, lol');
+            return CrashReport('👻 Something went wrong, lol', true);
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {

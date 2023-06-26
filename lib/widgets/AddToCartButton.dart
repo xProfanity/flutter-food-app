@@ -28,7 +28,6 @@ class _AddToCartButtonState extends State<AddToCartButton> {
         cartData.where((item) => item?['foodId'] == food?.docId).toList();
 
     if (cart.isEmpty) {
-      print('cart eeti $cart');
       setState(() {
         cart = cartData;
       });
@@ -40,7 +39,6 @@ class _AddToCartButtonState extends State<AddToCartButton> {
         }
       }
     }
-    print('foodItem here? $itemInCart');
 
     return Row(
       children: [

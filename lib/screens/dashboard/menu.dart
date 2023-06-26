@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:foodapp/widgets/AddToCartButton.dart';
+import 'package:foodapp/widgets/CrashReport.dart';
 import 'package:foodapp/widgets/Loader.dart';
 
 class Menu extends StatefulWidget {
@@ -10,32 +11,67 @@ class Menu extends StatefulWidget {
   final cart;
   final foodMenu;
   final count;
+  final updateSearchTerm;
+  final searchTerm;
 
-  const Menu(
-      this.updateCartCount, this.docId, this.cart, this.count, this.foodMenu);
+  const Menu(this.updateCartCount, this.docId, this.cart, this.count,
+      this.foodMenu, this.updateSearchTerm, this.searchTerm);
 
   @override
   _MenuState createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final foodMenu = widget.foodMenu;
+    List foodMenu = widget.foodMenu;
     final cart = widget.cart;
+    print('yiy foof maend $foodMenu');
     return foodMenu != null
         ? Container(
             child: Align(
             alignment: AlignmentDirectional.topStart,
             child: Column(children: [
               _header(),
-              Expanded(
-                child: ListView.builder(
-                    itemCount: foodMenu.length,
-                    itemBuilder: (context, int i) {
-                      return FoodTile(foodMenu[i], cart);
-                    }),
-              )
+              Visibility(
+                visible:
+                    widget.searchTerm != '' && foodMenu.isEmpty ? false : true,
+                child: Expanded(
+                  child: ListView.builder(
+                      itemCount: foodMenu.length,
+                      itemBuilder: (context, int i) {
+                        return FoodTile(foodMenu[i], cart);
+                      }),
+                ),
+              ),
+              Visibility(
+                  visible: widget.searchTerm != '' && foodMenu.isEmpty,
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 50),
+                        CrashReport(
+                            "No results found for \"${widget.searchTerm}\"",
+                            false),
+                      ],
+                    ),
+                  ))
             ]),
           ))
         : const Loader("Getting food menu 🥳");
@@ -120,6 +156,10 @@ class _MenuState extends State<Menu> {
               child: SizedBox(
             width: 300,
             child: TextField(
+              onChanged: (value) {
+                widget.updateSearchTerm(value);
+              },
+              controller: _controller,
               decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 12.0, horizontal: 16.0),
