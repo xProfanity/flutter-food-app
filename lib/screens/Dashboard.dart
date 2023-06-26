@@ -41,6 +41,7 @@ class _Dashboard extends State<Dashboard> {
 
   int count = 0;
   var cart = [];
+  num totalPriceInCart = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +55,20 @@ class _Dashboard extends State<Dashboard> {
       setState(() {
         count = newCartCount;
         cart = user['cart'];
+        totalPriceInCart = 0;
       });
     }
 
-    if (count == 0) {
-      setState(() {
-        count = cartCount;
-      });
+    setState(() {
+      count = cartCount;
+    });
+    num priceCalculation = 0;
+    for (var element in cart) {
+      priceCalculation += element['totalPrice'];
     }
+    setState(() {
+      totalPriceInCart = priceCalculation;
+    });
 
     return Scaffold(
         endDrawer: Drawer(
@@ -162,7 +169,10 @@ class _Dashboard extends State<Dashboard> {
                     child: Menu(updateCartCount, user['docId'], user['cart'],
                         count, foodMenu),
                   )
-                : Visibility(visible: !isMenu, child: ShoppingCart(cart)),
+                : Visibility(
+                    visible: !isMenu,
+                    child: ShoppingCart(cart, user['docId'], updateCartCount,
+                        count, totalPriceInCart)),
           ],
         ),
         bottomNavigationBar: BottomNavigation(count, switchDashboard));

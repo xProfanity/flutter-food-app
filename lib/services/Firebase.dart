@@ -107,7 +107,7 @@ class Firestore {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference menuCollection =
       FirebaseFirestore.instance.collection('menu');
-  final CollectionReference userCollection =
+  final CollectionReference _users =
       FirebaseFirestore.instance.collection('users');
 
   List<FoodMenu> _menuCollection(QuerySnapshot snapshot) {
@@ -123,5 +123,35 @@ class Firestore {
 
   Stream<List<FoodMenu>>? get menu {
     return menuCollection.snapshots().map(_menuCollection);
+  }
+
+  Future addToShoppingBag(food, docId) async {
+    final foodData = [
+      {
+        'name': food.name,
+        'photo': food.photoUrl,
+        'price': food.price,
+        'quantity': 1,
+        'totalPrice': food.price * 1,
+        'foodId': food.docId
+      }
+    ];
+
+    await _users.doc(docId).update({'cart': FieldValue.arrayUnion(foodData)});
+  }
+
+  Future removeFromShoppingCart(food, docId) async {
+    final foodData = [
+      {
+        'name': food['name'],
+        'photo': food['photo'],
+        'price': food['price'],
+        'quantity': food['quantity'],
+        'totalPrice': food['totalPrice'],
+        'foodId': food['foodId']
+      }
+    ];
+
+    await _users.doc(docId).update({'cart': FieldValue.arrayRemove(foodData)});
   }
 }

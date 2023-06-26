@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foodapp/services/Firebase.dart';
 
 class AddToCartButton extends StatefulWidget {
   final updateCartCount;
@@ -16,39 +16,7 @@ class AddToCartButton extends StatefulWidget {
 }
 
 class _AddToCartButtonState extends State<AddToCartButton> {
-  final CollectionReference _users =
-      FirebaseFirestore.instance.collection('users');
-
-  Future addToShoppingBag(food, docId) async {
-    final foodData = [
-      {
-        'name': food.name,
-        'photo': food.photoUrl,
-        'price': food.price,
-        'quantity': 1,
-        'totalPrice': food.price * 1,
-        'foodId': food.docId
-      }
-    ];
-
-    await _users.doc(docId).update({'cart': FieldValue.arrayUnion(foodData)});
-  }
-
-  Future removeFromShoppingCart(food, docId) async {
-    print('data to delete $food');
-    final foodData = [
-      {
-        'name': food['name'],
-        'photo': food['photo'],
-        'price': food['price'],
-        'quantity': food['quantity'],
-        'totalPrice': food['totalPrice'],
-        'foodId': food['foodId']
-      }
-    ];
-
-    await _users.doc(docId).update({'cart': FieldValue.arrayRemove(foodData)});
-  }
+  final firestore = Firestore();
 
   var cart = [];
   bool isInCart = false;
@@ -83,7 +51,7 @@ class _AddToCartButtonState extends State<AddToCartButton> {
               setState(() {
                 isInCart = true;
               });
-              await addToShoppingBag(widget.food, widget.docId);
+              await firestore.addToShoppingBag(widget.food, widget.docId);
             } else
               print('Already added in cart');
           },
@@ -125,7 +93,8 @@ class _AddToCartButtonState extends State<AddToCartButton> {
               setState(() {
                 isInCart = false;
               });
-              await removeFromShoppingCart(itemInCart[0], widget.docId);
+              await firestore.removeFromShoppingCart(
+                  itemInCart[0], widget.docId);
             },
             child: Container(
               width: 40,
