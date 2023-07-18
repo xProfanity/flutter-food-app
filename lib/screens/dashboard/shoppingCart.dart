@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodapp/screens/StripeScreen.dart';
 import 'package:foodapp/services/Firebase.dart';
 
 class ShoppingCart extends StatefulWidget {
@@ -66,7 +67,13 @@ class _ShoppingCart extends State<ShoppingCart> {
                     style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
                             Color(0xFF5433FF))),
-                    onPressed: () async {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  StripeScreen()));
+                    },
                     child: const Text(
                       "Proceed To Payment",
                       style:
